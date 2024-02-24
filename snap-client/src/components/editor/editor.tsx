@@ -37,7 +37,8 @@ export const Editor = ({
   macStyleTitleBar = true,
 }: EditorProps) => (
   <div
-    className={`editor-shadow ${opacity ? "bg-one-dark-base/[.93]" : "bg-one-dark-base"} rounded-2xl p-5 pb-7 border-border-color border-[1px]`}
+    className={`hljs editor-shadow rounded-2xl p-5 pb-7 border-border-color border-[1px]`}
+    style = {{ opacity: opacity ? 0.93 : 1 }}
   >
     {macStyleTitleBar && <MacStyleTitleBar />}
     <pre className="mt-4">

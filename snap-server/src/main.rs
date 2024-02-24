@@ -31,6 +31,10 @@ async fn root() -> impl Responder {
     NamedFile::open_async("./public/index.html").await.unwrap()
 }
 
+async fn themes() -> impl Responder {
+    NamedFile::open_async("./public/themes.json").await.unwrap()
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let neovim = Arc::new(Mutex::new(Neovim::new()));
@@ -47,7 +51,8 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(web::Data::new(server.clone()))
             .route("/ws", web::get().to(index))
-            .service(web::resource("/").to(root))
+            .route("/", web::get().to(root))
+            .route("/themes.json", web::get().to(themes))
             .service(Files::new("/public", "./public"))
             .service(Files::new("/static", "./public/static"))
     })

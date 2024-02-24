@@ -5,10 +5,12 @@ import { useConfig, useEvent } from "./hooks";
 import { toPng, toBlob } from "html-to-image";
 import download from "downloadjs";
 import { getWebsocketHost } from "./utils";
+import "./themes.css";
 
 const CODE_EMPTY_PLACEHOLDER = `print "Hello, CodeSnap.nvim!"`;
 const WATER_MARK_PLACEHOLDER = "CodeSnap.nvim";
 const PREVIEW_TITLE_PLACEHOLDER = "CodeSnap.nvim";
+const DEFAULT_THEME = "atom-one-dark";
 
 function App() {
   const [socketUrl] = useState(`ws://${getWebsocketHost()}/ws`);
@@ -17,6 +19,7 @@ function App() {
   const config = useConfig(event?.config_setup);
   const frameRef = useRef<HTMLDivElement | null>(null);
   const [isCopyButtonDisabled, setIsCopyButtonDisabled] = useState(false);
+  var theme = DEFAULT_THEME;
 
   const handleCopyButtonClick = useCallback(async () => {
     if (!frameRef.current) {
@@ -69,6 +72,11 @@ function App() {
     document.title = config?.preview_title ?? PREVIEW_TITLE_PLACEHOLDER;
   }, [config?.preview_title]);
 
+  const changeTheme = (theme: string) => {
+    var new_theme = "theme-" + theme;
+    document.body.className = new_theme;
+}
+
   return (
     <div className="w-full h-full flex flex-col items-center bg-deep-gray">
       <p className="rainbow-text text-4xl font-extrabold mt-20">
@@ -80,6 +88,7 @@ function App() {
           onExportClick={handleExportClick}
           onCopyClick={handleCopyButtonClick}
           readyState={readyState}
+          onThemeChangeProp={changeTheme}
         />
         <div id="frame" className="rounded-xl overflow-hidden">
           <Frame
