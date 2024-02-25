@@ -8,6 +8,7 @@ interface ControlBarProps {
   onExportClick(): void;
   readyState: ReadyState;
   onThemeChangeProp(theme: string): void;
+  theme: string;
 }
 
 export const ControlBar = ({
@@ -16,6 +17,7 @@ export const ControlBar = ({
   isCopyButtonDisabled,
   readyState,
   onThemeChangeProp,
+  theme,
 }: ControlBarProps) => {
   return (
     <div className="bg-neutral rounded-xl mb-2 p-1 flex flex-row items-center">
@@ -63,6 +65,7 @@ export const ControlBar = ({
           </svg>{" "}
         </button>
       <ThemeSelector
+        theme={theme}
         onChangeTheme={(theme: string) => {
           onThemeChangeProp(theme);
         }}

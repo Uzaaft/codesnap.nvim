@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from 'react';
 
-const ThemeSelector = ({ onChangeTheme }: { onChangeTheme: (theme: string) => void }) => {
-  const [theme, setTheme] = useState('theme1');
+var init = false;
 
+const ThemeSelector = ({
+  onChangeTheme,
+  theme
+}: {
+  onChangeTheme: (theme: string) => void,
+  theme: string
+}) => {
+  const [local_theme, setTheme] = useState(theme);
 
   const fetchThemes: () => Promise<string[]> = () => {
     const themes = fetch('/themes.json')
@@ -30,7 +37,7 @@ const ThemeSelector = ({ onChangeTheme }: { onChangeTheme: (theme: string) => vo
   return (
     <div className="theme-dropdown">
       <select
-        value={theme}
+        value={local_theme}
         onChange={handleThemeChange}
         className="text-white py-2 px-4 rounded-md focus:outline-none mr-1"
         style={{
@@ -44,8 +51,10 @@ const ThemeSelector = ({ onChangeTheme }: { onChangeTheme: (theme: string) => vo
           color: 'hsl(220 13% 69%)'
         }}
       >
-        {themes.map((theme: string) => (
-          <option value={theme}>{theme}</option>
+        {themes.map((theme) => (
+          <option key={theme} value={theme}>
+            {theme}
+          </option>
         ))}
       </select>
     </div>

@@ -5,7 +5,6 @@ import { useConfig, useEvent } from "./hooks";
 import { toPng, toBlob } from "html-to-image";
 import download from "downloadjs";
 import { getWebsocketHost } from "./utils";
-import "./themes.css";
 
 const CODE_EMPTY_PLACEHOLDER = `print "Hello, CodeSnap.nvim!"`;
 const WATER_MARK_PLACEHOLDER = "CodeSnap.nvim";
@@ -19,7 +18,7 @@ function App() {
   const config = useConfig(event?.config_setup);
   const frameRef = useRef<HTMLDivElement | null>(null);
   const [isCopyButtonDisabled, setIsCopyButtonDisabled] = useState(false);
-  var theme = DEFAULT_THEME;
+  var currentTheme = useState<string>(config?.highlight_theme ?? DEFAULT_THEME)[0];   
 
   const handleCopyButtonClick = useCallback(async () => {
     if (!frameRef.current) {
@@ -60,6 +59,26 @@ function App() {
     sendMessage(dataURL);
   }, [sendMessage]);
 
+  const changeTheme = (theme: string) => {
+    const cssLink = document.createElement("link");
+    cssLink.id = "theme-link";
+    theme = theme ?? DEFAULT_THEME;
+
+    const oldLink = document.getElementById("theme-link");
+    if (oldLink) {
+      document.head.removeChild(oldLink);
+    }
+
+    console.log(`Loading theme: ${theme}`);
+
+    import(`./styles/${theme}.css`).then((module) => {
+      cssLink.href = module.default;
+      cssLink.rel = "stylesheet";
+      document.head.appendChild(cssLink);
+      currentTheme = theme;
+    });
+  };
+
   useEffect(() => {
     if (readyState !== ReadyState.OPEN || !event?.copy) {
       return;
@@ -72,10 +91,10 @@ function App() {
     document.title = config?.preview_title ?? PREVIEW_TITLE_PLACEHOLDER;
   }, [config?.preview_title]);
 
-  const changeTheme = (theme: string) => {
-    var new_theme = "theme-" + theme;
-    document.body.className = new_theme;
-}
+  useEffect(() => {
+    changeTheme(currentTheme);
+    console.log("Theme changed to: ", currentTheme);
+  }, [currentTheme]);
 
   return (
     <div className="w-full h-full flex flex-col items-center bg-deep-gray">
@@ -89,6 +108,7 @@ function App() {
           onCopyClick={handleCopyButtonClick}
           readyState={readyState}
           onThemeChangeProp={changeTheme}
+          theme={currentTheme}
         />
         <div id="frame" className="rounded-xl overflow-hidden">
           <Frame
